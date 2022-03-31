@@ -228,5 +228,37 @@ namespace Magazin.DAL
             return dt;
         }
         #endregion
+
+        #region Invoice Bill
+        public DataTable InvoiceBill(String comanda_id)
+
+        {
+            SqlConnection conn = new SqlConnection(myconnstrng);
+
+            DataTable dt = new DataTable();
+
+            try
+            {
+                string sql = "SELECT PC.comanda_id, CONCAT(A.oras , ', ' ,A.strada , ', ' , A.numar) Adresa, CL.nume, CL.prenume, C.data_comanda, P.nume_produs, P.cod_produs, P.pret, cantitate, sum(P.pret * cantitate) 'SUMA COMANDA' FROM PRODUSE_COMANDATE PC JOIN PRODUS P ON P.cod_produs = PC.cod_produs JOIN COMANDA C ON PC.comanda_id = C.comanda_id JOIN ADRESA A ON A.adresa_id = C.adresa_id JOIN CLIENT CL ON A.client_id = CL.client_id WHERE PC.comanda_id=@comanda_id GROUP BY PC.comanda_id, C.adresa_id, CL.nume,Cl.prenume,C.data_comanda,C.stare, A.oras,A.strada, A.numar, P.nume_produs, P.cod_produs, P.pret, cantitate";
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@comanda_id", comanda_id);
+                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                conn.Open();
+
+                adapter.Fill(dt);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return dt;
+        }
+        #endregion
+
     }
 }
